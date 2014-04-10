@@ -13,7 +13,8 @@ varying vec3 vertNormal;
 varying vec3 vertLightDir;
 varying vec4 vertTexCoord;
 
-float mandelbrot();
+vec3 plus(vec3 a, vec3 b);
+vec3 times(vec3 a, vec3 b);
 float dist(vec3 a, vec3 b);
 
 void main() { 
@@ -22,35 +23,54 @@ void main() {
   gl_FragColor = vec4(diffuse * diffuse_color.rgb, 1.0); 
 
   //mandelbrot
-  float arbitrary = 10;//using a number to multiply and divide to get larger and work with ints
   int i = 0;//iterations
   int maxi = 20;
 
-  double cxmin = -2.1;
-  double cxmax = .9;
-  double cymin = -1.5;
-  double cymax = 1.5;
+  float offset = 2.1;
 
- 	for(int x = 0; x < (1.0*arbitrary); x++){
-		for(int y = 0; y < (1.0*arbitrary); y++){
-			vec3 p = vec3 (0,0,0);
-			x = x/arbitrary;
-			y = y/arbitrary;
-			double z = 0;
-			while(z < 2 && i<maxi){
-				i = i+1;
-			}
+  float cxmin = -2.1;
+  float cxmax = .9;
+  float cymin = -1.5;
+  float cymax = 1.5;
 
+
+
+  float currR = 0.0;//distance from pt to origin
+
+  	vec3 coord = vec3 (vertTexCoord.x, vertTexCoord.y, vertTexCoord.z);
+  	coord.x = ((vertTexCoord.x)*(cxmax-cxmin))/(1.0)+cxmin;
+  	coord.y = ((vertTexCoord.y)*(cymax-cymin))/(1.0)+cymin;
+  	
+	vec3 z = vec3 (0,0,0);
+
+	if(coord.x >= cxmin && coord.x <= cxmax && coord.y >= cymin && coord.y <= cymax){
+		for(i=0;i<maxi && abs(currR) < 2.0;i++){
+			z = times(z, z);
+			z = plus(z, coord);
+			currR = dist(coord, z);
 		}
+	}
+
+	diffuse_color = vec4(1.0, 1.0, 1.0, 1.0);
+	if(i==maxi){
+		gl_FragColor = vec4(diffuse * diffuse_color.rgb, 1.0); 
 	}
 }
 
-float mandelbrot(){
-	return 1.0;
+vec3 plus(vec3 a, vec3 b){
+	vec3 r = vec3(0,0,0);
+	r.x = a.x + b.x;
+	r.y = a.y + b.y;
+	return r;
 }
-
-//calculates distance between x and y of two points
+vec3 times(vec3 a, vec3 b){
+	vec3 r = vec3(0,0,0);
+	r.x = a.x*b.x - a.y*b.y;
+	r.y = a.x*b.y + a.y*b.x;
+	return r;
+}
+// distance between x and y of two points
 float dist(vec3 a, vec3 b){
-	return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
+	return sqrt(pow(a.x - b.x, 2.0) + pow(a.y - b.y, 2.0));
 }
 
