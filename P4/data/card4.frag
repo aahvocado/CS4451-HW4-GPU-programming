@@ -21,4 +21,6 @@ varying vec4 vertTexCoord;
 void main() { 
   vec4 diffuse_color = texture2D(texture, vertTexCoord.xy);
   gl_FragColor = vec4(diffuse_color.rgb, 1.0);
+
+  
 }

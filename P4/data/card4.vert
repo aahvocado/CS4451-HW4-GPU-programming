@@ -3,6 +3,8 @@
 // Our shader uses both processing's texture and light variables
 #define PROCESSING_TEXLIGHT_SHADER
 
+vec4 getGrayscale(vec4 c);
+
 // Set automatically by Processing
 uniform mat4 transform;
 uniform mat3 normalMatrix;
@@ -34,5 +36,11 @@ void main() {
     vertTexCoord = texMatrix * vec4(texCoord, 1.0, 1.0);
 	
 	//your code here
+    
+}
 
+vec4 getGrayscale(vec4 c){
+  	float gray = c.r*.2989 + c.g*.5870 + c.b*.1140;
+    vec4 gscale = vec4(gray, gray, gray, 1.0);
+    return gscale;
 }
