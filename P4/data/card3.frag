@@ -9,6 +9,7 @@ precision mediump int;
 
 // Set in Processing
 uniform sampler2D texture;
+float getGray(vec4 c);
 vec4 getGrayscale(vec4 c);
 
 // These values come from the vertex shader
@@ -29,34 +30,27 @@ void main() {
 
     float offset = 0.01;
 
-    vec2 leftVert = (vertTexCoord.x-offset, vertTexCoord.y);
-    vec4 leftColor = texture2D(texture, leftVert);
-    vec4 lg = getGrayscale(leftColor);//left grayscale
+    vec2 leftVert = vec2(vertTexCoord.x-offset, vertTexCoord.y);
+    vec2 upVert = vec2(vertTexCoord.x, vertTexCoord.y+offset);
+    vec2 rightVert = vec2(vertTexCoord.x+offset, vertTexCoord.y);
+    vec2 downVert = vec2(vertTexCoord.x, vertTexCoord.y-offset);
 
-    vec2 upVert = (vertTexCoord.x, vertTexCoord.y+offset);
-    vec4 upColor = texture2D(texture, upVert);
-    vec4 ug = getGrayscale(upColor);//up grayscale
+    vec4 leftColor = texture2D(texture, leftVert.xy);
+    vec4 upColor = texture2D(texture, upVert.xy);
+    vec4 rightColor = texture2D(texture, rightVert.xy);
+    vec4 downColor = texture2D(texture, downVert.xy);
 
+    float cg = getGray(diffuse_color);
+    float sumg = getGray(leftColor) + getGray(upColor) + getGray(downColor) + getGray(rightColor);
+	  float newg = sumg-(4*cg);
 
-    vec2 rightVert = (vertTexCoord.x+offset, vertTexCoord.y);
-    vec4 rightColor = texture2D(texture, rightVert);
-    vec4 rg = getGrayscale(rightColor);//right grayscale
+    gl_FragColor = vec4(newg, newg, newg, 1.0);
 
-    vec2 downVert = (vertTexCoord.x, vertTexCoord.y-offset);
-    vec4 downColor = texture2D(texture, downVert);
-    vec4 dg = getGrayscale(leftColor);//down grayscale
+}
 
-    lg = leftColor;//test to make it not grayscale again
-    ug = upColor;
-	rg = rightColor;
-	dg = downColor;
-	
-    vec4 laplacianValue = vec4(lg+ug+rg+dg);//we added it
-    vec4 newg = getGrayscale(laplacianValue);//we turned it into grayscale
-    newg = newg - (4*gscale);
-
-    gl_FragColor = vec4(diffuse * newg.rgb, 1.0);
-
+float getGray(vec4 c){
+  float gray = 0.2989*c.r + 0.5870*c.g + 0.1140*c.b;
+  return gray;
 }
 
 vec4 getGrayscale(vec4 c){

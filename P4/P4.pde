@@ -98,13 +98,30 @@ void draw() {
   //Render the "Terrain" shader (card4)
   //You will need to subdivide this card in x and y
   shader(mountainShader);
-  beginShape();
-    texture(gradientTexture);
-    vertex(-300, 50,  100, 0,0);
-    vertex(-50,  50,  100, 1,0);
-    vertex(-50,  300, 100, 1,1);
-    vertex(-300, 300, 100, 0,1);
-  endShape();
+  float xmin = -500.0;
+  float xmax = -50.0;
+  float ymin = 50.0;
+  float ymax = 300.0;
+  float zmin = 100.0;
+  float zmax = 100.0;
+  
+  int interations = 20;
+  float xint = (float)xmax-xmin/interations;
+  float yint = (float)ymax-ymin/interations;
+
+  for(float x = xmin; x<xmax; x+xint){
+    for(float y = ymin; y<ymax; y+yint){
+
+      beginShape();
+        texture(gradientTexture);
+        vertex(-300, 50,  100, 0, 0);
+        vertex(-50,  50,  100, 1, 0);
+        vertex(-50,  300, 100, 1, 1);
+        vertex(-300, 300, 100, 0, 1);
+        
+      endShape();
+    }
+  }
 
 }
 
