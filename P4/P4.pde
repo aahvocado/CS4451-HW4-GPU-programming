@@ -23,7 +23,7 @@ void setup() {
   fill(204);
   
   duckTexture = loadImage("data/duck.bmp");
-  gradientTexture = loadImage("data/gradient3.jpg");
+  gradientTexture = loadImage("data/RGBgradient.jpg");
   floorShader = loadShader("data/card0.frag", "data/card0.vert");
   cheeseShader = loadShader("data/card1.frag", "data/card1.vert");
   mandelbrotShader = loadShader("data/card2.frag", "data/card2.vert");
@@ -98,26 +98,35 @@ void draw() {
   //Render the "Terrain" shader (card4)
   //You will need to subdivide this card in x and y
   shader(mountainShader);
-  float xmin = -500.0;
+  float xmin = -300.0;
   float xmax = -50.0;
   float ymin = 50.0;
   float ymax = 300.0;
   float zmin = 100.0;
   float zmax = 100.0;
   
-  int interations = 20;
-  float xint = (float)xmax-xmin/interations;
-  float yint = (float)ymax-ymin/interations;
+  int iterations = 20;
+  float xint = (float)(xmax-xmin)/iterations;
+  float yint = (float)(ymax-ymin)/iterations;
+  
+  float uint = (float)1/iterations;
 
-  for(float x = xmin; x<xmax; x+xint){
-    for(float y = ymin; y<ymax; y+yint){
+  for(float x = 0; x<iterations; x++){
+    for(float y = 0; y<iterations; y++){
 
       beginShape();
         texture(gradientTexture);
-        vertex(-300, 50,  100, 0, 0);
-        vertex(-50,  50,  100, 1, 0);
-        vertex(-50,  300, 100, 1, 1);
-        vertex(-300, 300, 100, 0, 1);
+
+        vertex(x*xint - 300, y*yint + 50, 100, x*uint, y*uint);
+        vertex(x*xint - 300 + xint, y*yint + 50, 100, (x+1)*uint, y*uint);
+        vertex(x*xint - 300 + xint, y*yint + 50 + yint, 100, (x+1)*uint, (y+1)*uint);
+        vertex(x*xint - 300, y*yint + 50 + yint, 100, x*uint, (y+1)*uint);
+        
+//        print("\n");
+//        print("\npos x: "+ (x*xint - 300) + " y: "+(y*yint + 50));
+//        print("\npos x: "+ (x*xint - 50) + " y: "+(y*yint + 50));
+//        print("\npos x: "+ (x*xint - 50) + " y: "+(y*yint + 300));
+//        print("\npos x: "+ (x*xint - 300) + " y: "+(y*yint + 300));
         
       endShape();
     }
